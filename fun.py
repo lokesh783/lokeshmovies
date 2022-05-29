@@ -26,7 +26,7 @@ most_popular = pickle.load(open('most_popular.pkl','rb'))         # MOST POPULAR
 # DATA FILE IMPORTS   
 KNN_data = pandas_lib.read_csv(r"Datasets\clean_dataa.csv")
 movieLens = pd.read_csv('Datasets/movies.csv')
-links = pd.read_csv('Datasets/links.csv')
+converter = pd.read_csv('Datasets/links.csv')
 tmdb_movies = pd.read_csv('Datasets/tmdb_5000_credits.csv')
 data = pandas_lib.read_csv( r'Datasets/clean_data.csv')
 
@@ -159,9 +159,9 @@ def item_item(dyn_rating):
         movie_lens_id = movieLens.loc[movieLens['title'] == i, 'movieId']
         movie_lens_id = movie_lens_id.iloc[0]
 
-        if movie_lens_id not in links['movieId'].values:
+        if movie_lens_id not in converter['movieId'].values:
             continue
-        main_id = links.loc[links['movieId'] == movie_lens_id, 'tmdbId']
+        main_id = converter.loc[converter['movieId'] == movie_lens_id, 'tmdbId']
         main_id = int(main_id.iloc[0])
         pic, date, dur, rating, name, overvie = fetch_poster(main_id)
         item_item_based_rec_movies[0].append(name)
@@ -181,8 +181,8 @@ def KNN_based(searched_movie):
     searched_movie_tmdb_id = mov_and_id['id'].iloc[searched_movie_index]
 
     # LENS ID
-    if searched_movie_tmdb_id in links['tmdbId'].values:
-        searched_movie_lens_id = links.loc[links['tmdbId']
+    if searched_movie_tmdb_id in converter['tmdbId'].values:
+        searched_movie_lens_id = converter.loc[converter['tmdbId']
                                            == searched_movie_tmdb_id, 'movieId']
         searched_movie_lens_id = searched_movie_lens_id.iloc[0]
     else:
@@ -215,8 +215,8 @@ def KNN_based(searched_movie):
         
         
         # GETTING MOVIE TMDB ID FROM MOVIE LENS ID
-        if rec_mov_lens_id in links['movieId'].values:
-            rec_mov_tmdb_id = links.loc[links['movieId']== rec_mov_lens_id, 'tmdbId']
+        if rec_mov_lens_id in converter['movieId'].values:
+            rec_mov_tmdb_id = converter.loc[converter['movieId']== rec_mov_lens_id, 'tmdbId']
             rec_mov_tmdb_id = rec_mov_tmdb_id.iloc[0]
         else:
             continue
