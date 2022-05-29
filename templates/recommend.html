@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Lokesh Movies</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" type="image/x-icon" href="{{ url_for('static',filename='images/logs.png') }}">
+        <!-- Stylesheets -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+        <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='style.css') }}">
+        <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+        <script type="text/javascript">
+            var films = {{suggest|tojson}};
+        </script>
+    </head>
+    <body>
+
+    <!-- We have used loggedin and loggedout at various places for the cases when user is loggedin or not-->
+        <nav class="navbar">
+            <div class="left-container">
+                <img src="{{ url_for('static',filename='images/logs.png') }}" class="  brand-logo" alt="">
+
+            <ul class="nav-links">
+                <li class="nav-items d-remove">
+                {% if n=="loggedin"%}
+                    <a href="/index">Home</a>
+                {% elif n=="loggedout"%}
+                    <a href="/">Home</a>
+                {% endif %}
+                    </li>
+                <li class="nav-items d-remove"><a href="#">Genres</a></li>
+                <li class="nav-items d-remove"><a href="#">Movies</a></li>
+            </ul>
+        </div>
+            <div class="right-container">
+                <form class="land-form" method="POST" action="{{ url_for('rec') }}">
+                    <input id="autoComplete" autocomplete="off" type="text" class="search-box" name="movie_name" placeholder="search">
+                </form>
+                <div class="linkks">
+                    {% if n=="loggedin"%}
+                    <a href"{{url_for('logout')}} class="login-link">Logout</a>
+                    {% elif n=="loggedout" %}
+                    <button class="sub-btn">Register</button>
+                    <a href="{{url_for('login') }}" class="login-link">Login</a>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+
+
+        <!-- BANNERS -->
+
+        <div class="carousel-container">
+            <div class="carousel">
+                  <div class="slider">
+                    <div class="slide-content">
+                        <h1 class="movie-title">{{searched_movie}}</h1>
+                        <div class="basic-content">
+                            <h2 > {{rel_year}} </h2>
+                            <h2 >{{dur}}</h2>
+                            <h2>{{genres[0]}}</h2>
+                        </div>
+                        
+                        <p class="movie-des">{{overview}}</p>
+                        <!--  We will give rating option only if user is registered-->
+                        {% if n=="loggedin"%}
+                        <form  id="rate-form" action="{{ url_for('add', val=searched_movie) }}" method="POST">
+                            <input class="ip-form" placeholder="rating" type="text" name = "rating">
+                        </form>
+                        {% endif%}
+                    </div>
+                    <img src={{pic}} alt="">
+                </div>
+            </div>
+        </div>
+
+        <h1 class="title">Cast</h1>
+        <div class="movies-list">
+            <button class="pre"> <img src="{{ url_for('static',filename='images/pre.PNG') }}" alt=""> </button>
+            <button class="nxt"> <img src="{{ url_for('static',filename='images/nxt.PNG') }}" alt=""> </button>
+            <div class="card-container">            
+                {% for i in range(size) %}
+                <div class="card">
+                    <img src={{cast_pic[i]}} class="card-img" alt="Pic not available">
+                    <div onclick="solver()" class="card-body">
+                        <h2 class="name" >{{cast_name[i]}}</h2>
+                    </div>
+                </div>
+                {% endfor %} 
+            </div>
+        </div>
+
+        <!-- cards -->
+        <h1 class="title">More Like This</h1>
+        <div class="movies-list">
+            <button class="pre"> <img src="{{ url_for('static',filename='images/pre.PNG') }}" alt=""> </button>
+            <button class="nxt"> <img src="{{ url_for('static',filename='images/nxt.PNG') }}" alt=""> </button>
+            <div class="card-container">            
+            {% for i in range(12) %}
+                <div class="card">
+                    <img src={{arr_cont[1][i]}} class="card-img" alt="">
+                    <div onclick="solver()" class="card-body">
+                        <h2 class="name" >{{arr_cont[0][i]}}</h2>
+                        <h6 class="des" >{{arr_cont[2][i]}}</h6>
+                    </div>
+                </div>
+                {% endfor %} 
+            </div>
+        </div>
+        <h1 class="title" >KNN based</h1> 
+        {% if arr_KNN_len==0 and name_len==0 %}
+            <h1 class="title" >Beacuse this movie is not present in our Movie lens dataset , we can't show you KNN Based recommendation</h1> 
+        {% elif arr_KNN_len==0 %}
+            <div class="movies-list">
+            <button class="pre"> <img src="{{ url_for('static',filename='images/pre.PNG') }}" alt=""> </button>
+            <button class="nxt"> <img src="{{ url_for('static',filename='images/nxt.PNG') }}" alt=""> </button>
+            <div class="card-container">
+                <!--  THIS RANGE  CAN BE DYNAMIC TOO -->
+                {% for i in range(name_len) %}
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="name" >{{names[i]}}</h2>
+                    </div>
+                </div>
+                {%endfor%}
+            </div>
+        </div>
+        {% else %}
+        <div class="movies-list">
+            <button class="pre"> <img src="{{ url_for('static',filename='images/pre.PNG') }}" alt=""> </button>
+            <button class="nxt"> <img src="{{ url_for('static',filename='images/nxt.PNG') }}" alt=""> </button>
+            <div class="card-container">
+                <!--  THIS RANGE  CAN BE DYNAMIC TOO -->
+                {% for i in range(arr_KNN_len) %}
+                <div class="card">
+                    <img src="{{ arr_KNN[0][i]  }}" class="card-img" alt="Image not available">
+                    <div class="card-body">
+                        <h2 class="name" >{{arr_KNN[1][i]}}</h2>
+                        <h6 class="des" >{{arr_KNN[2][i]}}</h6>
+                    </div>
+                </div>
+                {%endfor%}
+            </div>
+        </div>
+        {% endif %}
+
+        <footer>
+            <div class="container">
+              <div class="row">
+                       <div class="col-md-4 col-sm-6 col-xs-12">
+                         <span class="logo">Lokesh Films</span>
+                       </div>
+                       
+                       <div class="col-md-4 col-sm-6 col-xs-12">
+                           <ul class="menu">
+                                <span>Menu</span>    
+                                <li>
+                                   <a href="#">Home</a>
+                                 </li>
+                                      
+                                 <li>
+                                    <a href="#">Trending</a>
+                                 </li>
+                                      
+                                 <li>
+                                   <a href="#">Rated</a>
+                                 </li>
+                                      
+                                 <li>
+                                    <a href="#">Gallery</a>
+                                 </li>
+                            </ul>
+                       </div>
+                  
+                       <div class="col-md-4 col-sm-6 col-xs-12">
+                         <ul class="address">
+                           <span>Contact</span>       
+                           <li>
+                              <i class="fa fa-phone" aria-hidden="true"></i> 
+                              <a href="#">Phone</a>
+                           </li>
+                           <li>
+                              <i class="fa fa-map-marker" aria-hidden="true"></i> 
+                              <a href="#">Adress</a>
+                           </li> 
+                           <li>
+                              <i class="fa fa-envelope" aria-hidden="true"></i> 
+                              <a href="#">Email</a>
+                           </li> 
+                          </ul>
+                       </div>
+                   </div> 
+               </div>
+           </footer>
+  
+
+        <!-- Java Script files -->
+        <script src="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@7.2.0/dist/js/autoComplete.min.js"></script>
+        <script type="text/javascript" src="{{url_for('static', filename='autocomplete.js')}}"></script>
+    </body>
+</html>

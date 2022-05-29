@@ -1,0 +1,35 @@
+.container{
+    padding:10%;
+    color:white;
+}
+.container-box{
+    background-color:aliceblue;
+    padding:6%;
+    min-width:7rem;
+    max-width:40rem;
+    border-radius:14px;
+}
+body{
+    background-image:url(https://springboard-cdn.appadvice.com/wp-content/appadvice-v2-media/2016/11/Netflix-background_860c8ece6b34fb4f43af02255ca8f225-xl.jpg)
+}
+.login-link{
+    color: rgb(255, 255, 255);
+    opacity: 0.9;
+    text-transform: uppercase;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    padding-bottom:1rem;
+    margin:0;
+    display:inline;
+}
+.login-link:hover{
+    color:#2d7eff;
+}
+.statement{
+    display:block;
+}
+.s-b{
+    display:block;
+    margin-top:1rem;
+}

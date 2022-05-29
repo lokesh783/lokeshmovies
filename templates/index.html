@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Lokesh Movies</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" type="image/x-icon" href="{{ url_for('static',filename='images/logs.png') }}">
+        <!-- Stylesheets -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+        <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='style.css') }}">
+        <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+        <script type="text/javascript">
+            var films = {{suggest|tojson}};
+        </script>
+    </head>
+    <body>
+
+        <!--When movie is not present in dataset-->
+        {% if pop_up==1 %}
+        <script>alert("Movie is not present in our tmdb dataset")</script>
+        {% endif %}
+        
+        <!--When there is no rated movie present in dataset-->
+        {% if no_rated_movie==1 %}
+        <script>alert("Please rate atleast one movie")</script>
+        {% endif %}
+
+    <nav class="navbar">
+        <div class="left-container">
+        <img src="{{ url_for('static',filename='images/logs.png') }}" class="  brand-logo" alt="">
+        <ul class="  nav-links">
+            <li class="nav-items d-remove"><a href="#">Home</a></li>
+            <li class="nav-items d-remove"><a href="#">Genres</a></li>
+            <li class="nav-items"><a href="{{ url_for('collab_rec') }}"> Recommend </a>
+        </ul>
+    </div>
+        <div class="right-container">
+            <!--  Search Box   -->
+            <form class="land-form" method="POST" action="{{ url_for('rec') }}">
+                <input id="autoComplete" autocomplete="off" type="text" class="search-box" name="movie_name" placeholder="search">
+            </form>
+            <div class="linkks">
+                <a href="/logout" class="login-link">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+
+
+        
+        
+        <div id="carouselExampleIndicators" class="carousel slide " data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+              </div>
+            <div class="carousel-container carousel-inner ">
+                <div class="carousel"> 
+                    <div class="slider carousel-item active">
+                        <div class="slide-content">
+                            <h1 class="movie-title">{{most_popular[1][0]}}</h1>
+                            <div class="basic-content">
+                                <h2> {{most_popular[2][0]}} </h2>
+                                <h2>{{most_popular[3][0]}}</h2>
+                                <h2>{{most_popular[4][0]}}</h2>
+                            </div>
+                            <p class="movie-des">{{most_popular[5][0]}}</p>
+                        </div>
+                        <img src="{{ most_popular[0][0] }}" class="d-block w-100" alt="...">
+                    </div>
+
+                    <div class="slider carousel-item">
+                        <div class="slide-content">
+                            <h1 class="movie-title">{{most_popular[1][1]}}</h1>
+                            <div class="basic-content">
+                                <h2> {{most_popular[2][1]}} </h2>
+                                <h2>{{most_popular[3][1]}}</h2>
+                                <h2>{{most_popular[4][1]}}</h2>
+                            </div>
+                            <p class="movie-des">{{most_popular[5][1]}}</p>
+                        </div>
+                        <img src="{{ most_popular[0][1] }}" class="d-block w-100" alt="...">
+                    </div>
+
+                    <div class="slider carousel-item">
+                        <div class="slide-content">
+                            <h1 class="movie-title">{{most_popular[1][2]}}</h1>
+                            <div class="basic-content">
+                                <h2> {{most_popular[2][2]}} </h2>
+                                <h2>{{most_popular[3][2]}}</h2>
+                                <h2>{{most_popular[4][2]}}</h2>
+                            </div>
+                            <p class="movie-des">{{most_popular[5][2]}}</p>
+                        </div>
+                        <img src="{{ most_popular[0][2] }}" class="d-block w-100" alt="...">
+                      </div>
+                </div> 
+
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                  </button>
+                  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                  </button>
+            </div>
+        </div>
+        
+        
+        <h1 class="title">Most Popular</h1>
+        <div class="movies-list">
+            <button class="pre"> <img src="{{ url_for('static',filename='images/pre.PNG') }}" alt=""> </button>
+            <button class="nxt"> <img src="{{ url_for('static',filename='images/nxt.PNG') }}" alt=""> </button>
+            <div class="card-container">
+                <!--  THIS RANGE  CAN BE DYNAMIC TOO -->
+                {% for i in range(20) %}
+                <div class="card">
+                    <img class="m-r-image" src="{{ most_popular[0][i]  }}" class="card-img" alt="Image not available">
+                    <div class="card-body">
+                        <h2 class="name" >{{most_popular[1][i]}}</h2>
+                        <h6 class="des" >{{most_popular[2][i]}}</h6>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+
+        <h1 class="title">Latest</h1>
+        <div class="movies-list">
+            <button class="pre"> <img src="{{ url_for('static',filename='images/pre.PNG') }}" alt=""> </button>
+            <button class="nxt"> <img src="{{ url_for('static',filename='images/nxt.PNG') }}" alt=""> </button>
+            <div class="card-container">
+                <!--  THIS RANGE  CAN BE DYNAMIC TOO -->
+                {% for i in range(20) %}
+                <div class="card">
+                    <img src="{{ most_rated[0][i]  }}" class="card-img" alt="">
+                    <div class="card-body">
+                        <h2 class="name" >{{most_rated[1][i]}}</h2>
+                        <h6 class="des" >{{most_rated[2][i]}}</h6>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+         
+         <footer>
+          <div class="container">
+            <div class="row">
+                     <div class="col-md-4 col-sm-6 col-xs-12">
+                       <span class="logo">Lokesh Films</span>
+                     </div>
+                     
+                     <div class="col-md-4 col-sm-6 col-xs-12">
+                         <ul class="menu">
+                              <span>Menu</span>    
+                              <li>
+                                 <a href="#">Home</a>
+                               </li>
+                                    
+                               <li>
+                                  <a href="#">Rated</a>
+                               </li>
+                                    
+                               <li>
+                                 <a href="#">Trending</a>
+                               </li>
+                                    
+                               <li>
+                                  <a href="#">Gallery</a>
+                               </li>
+                          </ul>
+                     </div>
+                
+                     <div class="col-md-4 col-sm-6 col-xs-12">
+                       <ul class="address">
+                         <span>Contact</span>       
+                         <li>
+                            <i class="fa fa-phone" aria-hidden="true"></i> 
+                            <a href="#">Phone</a>
+                         </li>
+                         <li>
+                            <i class="fa fa-map-marker" aria-hidden="true"></i> 
+                            <a href="#">Adress</a>
+                         </li> 
+                         <li>
+                            <i class="fa fa-envelope" aria-hidden="true"></i> 
+                            <a href="#">Email</a>
+                         </li> 
+                        </ul>
+                     </div>
+                 </div> 
+             </div>
+         </footer>
+
+        <!-- Java Script files -->
+        <script src="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@7.2.0/dist/js/autoComplete.min.js"></script>
+        <script type="text/javascript" src="{{url_for('static', filename='autocomplete.js')}}"></script>
+        
+    </body>
+</html>
